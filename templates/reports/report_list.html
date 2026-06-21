@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block page_title %}Compliance Reports{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex gap-2" method="get">
+                <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Search reports..." style="width:250px;">
+                <button class="btn btn-sm btn-outline-secondary">Search</button>
+            </form>
+            <a href="/reports/create/" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Generate Report</a>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr><th>Title</th><th>Asset</th><th>Policy</th><th>Score</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.title }}</td>
+                    <td>{{ report.asset.name }}</td>
+                    <td>{{ report.policy.name }}</td>
+                    <td>{{ report.score }}%</td>
+                    <td><span class="badge badge-{{ report.status }} px-2 py-1 rounded-pill">{{ report.get_status_display }}</span></td>
+                    <td>{{ report.generated_at|date:"d M Y" }}</td>
+                    <td><a href="/reports/{{ report.pk }}/delete/" class="btn btn-action btn-outline-danger">Delete</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No reports yet. <a href="/reports/create/">Generate your first report</a></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

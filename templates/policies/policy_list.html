@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block page_title %}Policies{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex gap-2" method="get">
+                <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Search policies..." style="width:250px;">
+                <button class="btn btn-sm btn-outline-secondary">Search</button>
+            </form>
+            <a href="/policies/create/" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Add Policy</a>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr><th>Name</th><th>Standard</th><th>Version</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for policy in policies %}
+                <tr>
+                    <td>{{ policy.name }}</td>
+                    <td>{{ policy.get_standard_display }}</td>
+                    <td>v{{ policy.version }}</td>
+                    <td><span class="badge bg-{% if policy.status == 'active' %}success{% elif policy.status == 'inactive' %}secondary{% else %}warning text-dark{% endif %} rounded-pill px-2">{{ policy.get_status_display }}</span></td>
+                    <td>
+                        <a href="/policies/{{ policy.pk }}/update/" class="btn btn-action btn-outline-primary me-1">Edit</a>
+                        <a href="/policies/{{ policy.pk }}/delete/" class="btn btn-action btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No policies yet. <a href="/policies/create/">Create your first policy</a></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

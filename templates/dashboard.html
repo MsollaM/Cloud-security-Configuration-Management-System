@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#1565c0,#1976d2);">
+            <div style="font-size:0.8rem;opacity:0.8;">Total Assets</div>
+            <div style="font-size:2.2rem;font-weight:700;">{{ total_assets }}</div>
+            <i class="bi bi-server" style="font-size:1.5rem;opacity:0.4;"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#2e7d32,#388e3c);">
+            <div style="font-size:0.8rem;opacity:0.8;">Compliant</div>
+            <div style="font-size:2.2rem;font-weight:700;">{{ compliant }}</div>
+            <i class="bi bi-shield-check" style="font-size:1.5rem;opacity:0.4;"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#c62828,#d32f2f);">
+            <div style="font-size:0.8rem;opacity:0.8;">Non-Compliant</div>
+            <div style="font-size:2.2rem;font-weight:700;">{{ non_compliant }}</div>
+            <i class="bi bi-shield-x" style="font-size:1.5rem;opacity:0.4;"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#e65100,#f57c00);">
+            <div style="font-size:0.8rem;opacity:0.8;">Warnings</div>
+            <div style="font-size:2.2rem;font-weight:700;">{{ warning }}</div>
+            <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;opacity:0.4;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-server me-2 text-primary"></i>Recent Cloud Assets</h6>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asset in recent_assets %}
+                        <tr>
+                            <td>{{ asset.name }}</td>
+                            <td>{{ asset.get_asset_type_display }}</td>
+                            <td>
+                                <div class="progress" style="height:6px;width:80px;">
+                                    <div class="progress-bar
+                                        {% if asset.compliance_score >= 80 %}bg-success
+                                        {% elif asset.compliance_score >= 60 %}bg-warning
+                                        {% else %}bg-danger{% endif %}"
+                                        style="width:{{ asset.compliance_score }}%">
+                                    </div>
+                                </div>
+                                <small>{{ asset.compliance_score }}%</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ asset.status }} px-2 py-1 rounded-pill">
+                                    {{ asset.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-3">No assets yet. <a href="/assets/create/">Add your first asset</a></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>Compliance Overview</h6>
+                <canvas id="complianceChart" height="200"></canvas>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="fw-bold mb-2">Quick Actions</h6>
+                <a href="/assets/create/" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                    <i class="bi bi-plus-circle me-1"></i>Add Cloud Asset
+                </a>
+                <a href="/policies/create/" class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                    <i class="bi bi-plus-circle me-1"></i>Create Policy
+                </a>
+                <a href="/reports/create/" class="btn btn-sm btn-outline-success w-100">
+                    <i class="bi bi-file-earmark-plus me-1"></i>Generate Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('complianceChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Compliant', 'Non-Compliant', 'Warning', 'Unknown'],
+        datasets: [{
+            data: [{{ compliant }}, {{ non_compliant }}, {{ warning }}, {{ total_assets|add:0 }}],
+            backgroundColor: ['#4caf50','#f44336','#ff9800','#9e9e9e'],
+            borderWidth: 0
+        }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }, cutout: '65%' }
+});
+</script>
+{% endblock %}
