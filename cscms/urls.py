@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from assets.models import CloudAsset
 from reports.models import ComplianceReport
@@ -24,6 +24,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 urlpatterns = [
+    path('', lambda request: redirect('/accounts/login/')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('dashboard/', dashboard, name='dashboard'),
