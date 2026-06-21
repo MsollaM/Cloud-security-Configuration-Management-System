@@ -14,12 +14,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Our CSCMS apps
     'assets',
     'policies',
     'reports',
     'accounts',
-    # Security packages
     'axes',
 ]
 
@@ -74,14 +72,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Redirect settings
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-# django-axes: account lockout after 5 failed attempts
 AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1  # 1 hour lockout
+AXES_COOLOFF_TIME = 1
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
@@ -93,3 +89,10 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Africa/Dar_es_Salaam'
 USE_I18N = True
 USE_TZ = True
+
+# ── Deployment security ──────────────────────────────────────────
+CSRF_TRUSTED_ORIGINS = [
+    'https://cloud-security-configuration-management-system-production.up.railway.app',
+]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
