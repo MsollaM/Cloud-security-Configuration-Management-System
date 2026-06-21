@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,10 +55,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'cscms.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3')
+    )
 }
 
 STATIC_URL = '/static/'
@@ -90,7 +90,6 @@ TIME_ZONE = 'Africa/Dar_es_Salaam'
 USE_I18N = True
 USE_TZ = True
 
-# ── Deployment security ──────────────────────────────────────────
 CSRF_TRUSTED_ORIGINS = [
     'https://cloud-security-configuration-management-system-production.up.railway.app',
 ]
